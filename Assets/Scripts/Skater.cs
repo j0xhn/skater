@@ -34,6 +34,9 @@ public class Skater : MonoBehaviour {
 
 			//Play the ollie animation
 			animator.SetTrigger("ollie");
+
+			//Play sfx
+			AudioManager.Instance.PlaySingle(AudioManager.Instance.sfxOllie);
 		}
 	}
 
@@ -52,6 +55,6 @@ public class Skater : MonoBehaviour {
 		//the skater crash
 		animator.SetTrigger("crash");
 
-		GameManager.Instance.GameActive = false;
+		GameManager.Instance.EndGame();
 	}
 }

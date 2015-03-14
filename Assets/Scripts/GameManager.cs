@@ -17,9 +17,6 @@ public class GameManager : MonoBehaviour {
 		get {
 			return gameActive;
 		}
-		set {
-			gameActive = value;
-		}
 	}
 
 	private float gameSpeedMultiplier = 1.0f;
@@ -53,6 +50,8 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		AudioManager.Instance.PlaySingle(AudioManager.Instance.sfxSkateOrDie);
+		StartCoroutine("PlayGameMusic", 1.7f);
 		StartCoroutine(IncrementSpeed());
 	}
 	
@@ -61,10 +60,30 @@ public class GameManager : MonoBehaviour {
 
 	}
 
+	IEnumerator PlayGameMusic(float waitTime)
+	{
+		yield return new WaitForSeconds(waitTime);
+		AudioManager.Instance.PlayMusic();
+	}
+
 	IEnumerator IncrementSpeed()
 	{
 		yield return new WaitForSeconds(INCREMENT_TIME);
 		gameSpeedMultiplier += SPEED_ADDITIVE;
 		StartCoroutine(IncrementSpeed());
+	}
+
+	public void EndGame()
+	{
+		gameActive = false;
+		AudioManager.Instance.musicSource.Stop();
+		StartCoroutine(EndGameAudio());
+	}
+
+	IEnumerator EndGameAudio()
+	{
+		AudioManager.Instance.PlaySingle(AudioManager.Instance.sfxCrash);
+		yield return new WaitForSeconds(0.5f);
+		AudioManager.Instance.PlaySingle(AudioManager.Instance.sfxGameOver);
 	}
 }
