@@ -4,8 +4,22 @@ using System.Collections;
 public class Moveable : MonoBehaviour {
 
 	public float speed = 3.0f;
-	public float X_POS_START = 5.0f;
-	public float X_POS_END = -5.0f;
+	protected float xPosStart = 5.0f;
+
+	public float XPosStart {
+		get {
+			return xPosStart;
+		}
+	}
+
+	public float xPosEnd = -7.0f;
+
+	public float XPosEnd {
+		get {
+			return xPosEnd;
+		}
+	}
+
 	protected int totalPieces = 0;
 
 	public int TotalPieces {
@@ -33,7 +47,7 @@ public class Moveable : MonoBehaviour {
 		{
 			transform.Translate(Vector3.left  * ((speed * GameManager.Instance.GameSpeedMultiplier) * Time.deltaTime));
 			
-			if (transform.localPosition.x <= X_POS_END)
+			if (transform.localPosition.x <= XPosEnd)
 			{
 				MoveableExceededBoundary();
 			}

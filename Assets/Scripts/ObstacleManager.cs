@@ -17,9 +17,9 @@ public class ObstacleManager : MonoBehaviour {
 	[SerializeField] List<Moveable> obstaclePrefabs;
 	List<GameObject> obstaclesActive;
 
-	public const int TOTAL_ASPHALT_PIECES = 10;
-	public const int TOTAL_SIDEWALK_PIECES = 17;
-	public const int TOTAL_BACKGROUND_PIECES = 3;
+	public const int TOTAL_ASPHALT_PIECES = 15;
+	public const int TOTAL_SIDEWALK_PIECES = 20;
+	public const int TOTAL_BACKGROUND_PIECES = 4;
 
 	public const float TIME_BETWEEN_OBSTACLES_MAX = 4.0f;
 	public const float TIME_BETWEEN_OBSTACLES_MIN = 0.9f;
@@ -94,7 +94,7 @@ public class ObstacleManager : MonoBehaviour {
 			SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
 			Moveable move = go.GetComponent<Moveable>();
 			move.TotalPieces = totalPieces;
-			Vector2 pos = new Vector2((move.X_POS_START - (x * sr.bounds.size.x)), go.transform.position.y);
+			Vector2 pos = new Vector2((move.XPosStart - (x * sr.bounds.size.x)), go.transform.position.y);
 			go.transform.localPosition = pos;
 		}
 		return list;
@@ -103,14 +103,18 @@ public class ObstacleManager : MonoBehaviour {
 
 	IEnumerator GenerateObstacle()
 	{
+
 		float rand = Random.Range(TIME_BETWEEN_OBSTACLES_MIN, TIME_BETWEEN_OBSTACLES_MAX);
 
 		yield return new WaitForSeconds(rand);
-		int index = Random.Range(0, obstaclePrefabs.Count);
-		GameObject go = GameObject.Instantiate(obstaclePrefabs[index].gameObject);
-		Moveable m = go.GetComponent<Moveable>();
-		go.transform.localPosition = new Vector2(m.X_POS_START, go.transform.localPosition.y);
-		obstaclesActive.Add(go);
+		if (GameManager.Instance.GameActive)
+		{
+			int index = Random.Range(0, obstaclePrefabs.Count);
+			GameObject go = GameObject.Instantiate(obstaclePrefabs[index].gameObject);
+			Moveable m = go.GetComponent<Moveable>();
+			go.transform.localPosition = new Vector2(m.XPosStart, go.transform.localPosition.y);
+			obstaclesActive.Add(go);
+		}
 
 		if (GameManager.Instance.GameActive)
 			StartCoroutine(GenerateObstacle());

@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\AudioManager.cs" />
      <Compile Include="Assets\Scripts\Background.cs" />
+     <Compile Include="Assets\Scripts\Building.cs" />
      <Compile Include="Assets\Scripts\DebugUtil.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\Ground.cs" />
