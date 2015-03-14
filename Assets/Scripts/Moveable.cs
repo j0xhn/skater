@@ -29,7 +29,7 @@ public class Moveable : MonoBehaviour {
 	// Update is called once per frame
 	protected virtual void Update () {
 
-		if (GameManager.Instance.GameActive)
+		if (GameManager.Instance.GameActive || GameManager.Instance.FirstTimeLoad)
 		{
 			transform.Translate(Vector3.left  * ((speed * GameManager.Instance.GameSpeedMultiplier) * Time.deltaTime));
 			

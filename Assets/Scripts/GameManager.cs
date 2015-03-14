@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
+	[SerializeField] Skater skater;
 	private static GameManager instance;
 	
 	public static GameManager Instance {
@@ -11,7 +13,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	private bool gameActive = true;
+	private bool gameActive = false;
 
 	public bool GameActive {
 		get {
@@ -41,6 +43,17 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	private Text distanceText;
+	private Button playButton;
+
+	private bool firstTimeLoad = true;
+
+	public bool FirstTimeLoad {
+		get {
+			return firstTimeLoad;
+		}
+	}
+
 	const float SPEED_ADDITIVE = 0.05f;
 	const float INCREMENT_TIME = 1.0f;
 
@@ -50,31 +63,48 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		AudioManager.Instance.PlaySingle(AudioManager.Instance.sfxSkateOrDie);
-		StartCoroutine("PlayGameMusic", 1.7f);
-		StartCoroutine(IncrementSpeed());
+		distanceText = GameObject.Find("DistanceText").GetComponent<Text>();
+		playButton = GameObject.Find("PlayButton").GetComponent<Button>();
 	}
-	
-	// Update is called once per frame
-	void Update () {
 
+	void Update()
+	{
+		if (gameActive)
+		{
+			distance += .1f * gameSpeedMultiplier;
+			distanceText.text = Mathf.RoundToInt(distance) + " Meters";
+		}
+	}
+
+	public void InitGame()
+	{
+		gameActive = true;
+		distanceText.text = "0 Meters";
+		if (!firstTimeLoad)
+			StartCoroutine("PlayGameMusic", 1.7f);
+		firstTimeLoad = false;
+		StartCoroutine(IncrementSpeed());
 	}
 
 	IEnumerator PlayGameMusic(float waitTime)
 	{
 		yield return new WaitForSeconds(waitTime);
-		AudioManager.Instance.PlayMusic();
+		AudioManager.Instance.PlayMusic(AudioManager.Instance.musicMain);
 	}
 
 	IEnumerator IncrementSpeed()
 	{
 		yield return new WaitForSeconds(INCREMENT_TIME);
 		gameSpeedMultiplier += SPEED_ADDITIVE;
-		StartCoroutine(IncrementSpeed());
+
+		if (gameActive)
+			StartCoroutine(IncrementSpeed());
 	}
 
 	public void EndGame()
 	{
+		gameSpeedMultiplier = 1.0f;
+		distance = 0;
 		gameActive = false;
 		AudioManager.Instance.musicSource.Stop();
 		StartCoroutine(EndGameAudio());
@@ -85,5 +115,19 @@ public class GameManager : MonoBehaviour {
 		AudioManager.Instance.PlaySingle(AudioManager.Instance.sfxCrash);
 		yield return new WaitForSeconds(0.5f);
 		AudioManager.Instance.PlaySingle(AudioManager.Instance.sfxGameOver);
+		playButton.gameObject.SetActive(true);
+	}
+
+	public void PlayButtonPressed()
+	{
+		if (gameActive == false)
+		{
+			ObstacleManager.Instance.DestroyObstacles();
+			skater.InitSkater();
+			playButton.gameObject.SetActive(false);
+			AudioManager.Instance.PlaySingle(AudioManager.Instance.sfxSkateOrDie);
+			ObstacleManager.Instance.InitObstacles();
+			InitGame();
+		}
 	}
 }

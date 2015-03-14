@@ -22,21 +22,24 @@ public class Skater : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
-		//Lets make him ollie
-		if (Input.GetButtonDown("Fire1") && jumping == false)
+		if (GameManager.Instance.GameActive && !GameManager.Instance.FirstTimeLoad)
 		{
-			//We don't want to keep adding force while the button is down 
-			//so only allow it to happen once
-			jumping = true;
+			//Lets make him ollie
+			if (Input.GetButtonDown("Fire1") && jumping == false)
+			{
+				//We don't want to keep adding force while the button is down 
+				//so only allow it to happen once
+				jumping = true;
 
-			//Add jump force
-			rigidBody.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
+				//Add jump force
+				rigidBody.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
 
-			//Play the ollie animation
-			animator.SetTrigger("ollie");
+				//Play the ollie animation
+				animator.SetTrigger("ollie");
 
-			//Play sfx
-			AudioManager.Instance.PlaySingle(AudioManager.Instance.sfxOllie);
+				//Play sfx
+				AudioManager.Instance.PlaySingle(AudioManager.Instance.sfxOllie);
+			}
 		}
 	}
 
@@ -51,10 +54,18 @@ public class Skater : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other) {
 
-		//By design we only use triggers for parts of obstacles that will make
-		//the skater crash
-		animator.SetTrigger("crash");
+		if (GameManager.Instance.GameActive)
+		{
+			//By design we only use triggers for parts of obstacles that will make
+			//the skater crash
+			animator.SetTrigger("crash");
 
-		GameManager.Instance.EndGame();
+			GameManager.Instance.EndGame();
+		}
+	}
+
+	public void InitSkater()
+	{
+		animator.Play ("Push");
 	}
 }

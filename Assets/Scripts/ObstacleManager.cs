@@ -14,14 +14,15 @@ public class ObstacleManager : MonoBehaviour {
 	List<GameObject> sidewalkPieces;
 	List<GameObject> backgroundPieces;
 
-	[SerializeField] List<Moveable> obstacles;
+	[SerializeField] List<Moveable> obstaclePrefabs;
+	List<GameObject> obstaclesActive;
 
 	public const int TOTAL_ASPHALT_PIECES = 10;
 	public const int TOTAL_SIDEWALK_PIECES = 17;
 	public const int TOTAL_BACKGROUND_PIECES = 3;
 
 	public const float TIME_BETWEEN_OBSTACLES_MAX = 4.0f;
-	public const float TIME_BETWEEN_OBSTACLES_MIN = 0.5f;
+	public const float TIME_BETWEEN_OBSTACLES_MIN = 0.9f;
 
 	private static ObstacleManager instance;
 	
@@ -45,20 +46,30 @@ public class ObstacleManager : MonoBehaviour {
 		DebugUtil.Assert(backgroundBack != null);
 		DebugUtil.Assert(backgroundMiddle != null);
 		DebugUtil.Assert(backgroundFront != null);
-		DebugUtil.Assert(obstacles != null && obstacles.Count > 0);
+		DebugUtil.Assert(obstaclePrefabs != null && obstaclePrefabs.Count > 0);
 		instance = this;
 	}
 
 	// Use this for initialization
 	void Start () {
-		CreateGround();
-		CreateBackgrounds();
-		StartCoroutine(GenerateObstacle());
+		SetupScenery();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
+	}
+
+	public void SetupScenery()
+	{
+		CreateGround();
+		CreateBackgrounds();
+	}
+
+	public void InitObstacles()
+	{
+		obstaclesActive = new List<GameObject>();
+		StartCoroutine(GenerateObstacle());
 	}
 
 	void CreateGround() {
@@ -95,13 +106,27 @@ public class ObstacleManager : MonoBehaviour {
 		float rand = Random.Range(TIME_BETWEEN_OBSTACLES_MIN, TIME_BETWEEN_OBSTACLES_MAX);
 
 		yield return new WaitForSeconds(rand);
-		int index = Random.Range(0, obstacles.Count);
-		GameObject go = GameObject.Instantiate(obstacles[index].gameObject);
+		int index = Random.Range(0, obstaclePrefabs.Count);
+		GameObject go = GameObject.Instantiate(obstaclePrefabs[index].gameObject);
 		Moveable m = go.GetComponent<Moveable>();
 		go.transform.localPosition = new Vector2(m.X_POS_START, go.transform.localPosition.y);
+		obstaclesActive.Add(go);
 
 		if (GameManager.Instance.GameActive)
 			StartCoroutine(GenerateObstacle());
 	}
-	
+
+	public void DestroyObstacles()
+	{
+		if (obstaclesActive != null && obstaclesActive.Count > 0)
+		{
+			foreach (GameObject go in obstaclesActive)
+			{
+				Destroy(go);
+			}
+
+			obstaclesActive.Clear();
+		}
+	}
+
 }
