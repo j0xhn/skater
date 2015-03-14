@@ -21,7 +21,7 @@ public class ObstacleManager : MonoBehaviour {
 	public const int TOTAL_BACKGROUND_PIECES = 3;
 
 	public const float TIME_BETWEEN_OBSTACLES_MAX = 4.0f;
-	public const float TIME_BETWEEN_OBSTACLES_MIN = 1.0f;
+	public const float TIME_BETWEEN_OBSTACLES_MIN = 0.5f;
 
 	private static ObstacleManager instance;
 	
