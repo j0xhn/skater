@@ -14,9 +14,14 @@ public class ObstacleManager : MonoBehaviour {
 	List<GameObject> sidewalkPieces;
 	List<GameObject> backgroundPieces;
 
+	[SerializeField] List<Moveable> obstacles;
+
 	public const int TOTAL_ASPHALT_PIECES = 10;
 	public const int TOTAL_SIDEWALK_PIECES = 17;
 	public const int TOTAL_BACKGROUND_PIECES = 3;
+
+	public const float TIME_BETWEEN_OBSTACLES_MAX = 4.0f;
+	public const float TIME_BETWEEN_OBSTACLES_MIN = 1.0f;
 
 	private static ObstacleManager instance;
 	
@@ -40,6 +45,7 @@ public class ObstacleManager : MonoBehaviour {
 		DebugUtil.Assert(backgroundBack != null);
 		DebugUtil.Assert(backgroundMiddle != null);
 		DebugUtil.Assert(backgroundFront != null);
+		DebugUtil.Assert(obstacles != null && obstacles.Count > 0);
 		instance = this;
 	}
 
@@ -47,11 +53,12 @@ public class ObstacleManager : MonoBehaviour {
 	void Start () {
 		CreateGround();
 		CreateBackgrounds();
+		StartCoroutine(GenerateObstacle());
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
 	}
 
 	void CreateGround() {
@@ -80,6 +87,21 @@ public class ObstacleManager : MonoBehaviour {
 			go.transform.localPosition = pos;
 		}
 		return list;
+	}
+	
+
+	IEnumerator GenerateObstacle()
+	{
+		float rand = Random.Range(TIME_BETWEEN_OBSTACLES_MIN, TIME_BETWEEN_OBSTACLES_MAX);
+
+		yield return new WaitForSeconds(rand);
+		int index = Random.Range(0, obstacles.Count);
+		GameObject go = GameObject.Instantiate(obstacles[index].gameObject);
+		Moveable m = go.GetComponent<Moveable>();
+		go.transform.localPosition = new Vector2(m.X_POS_START, go.transform.localPosition.y);
+
+		if (GameManager.Instance.GameActive)
+			StartCoroutine(GenerateObstacle());
 	}
 	
 }

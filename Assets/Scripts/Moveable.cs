@@ -4,7 +4,6 @@ using System.Collections;
 public class Moveable : MonoBehaviour {
 
 	public float speed = 3.0f;
-	private float MOVEABLE_SPEED_MULTIPLIER = 1.0f;
 	public float X_POS_START = 5.0f;
 	public float X_POS_END = -5.0f;
 	protected int totalPieces = 0;
@@ -29,11 +28,15 @@ public class Moveable : MonoBehaviour {
 	
 	// Update is called once per frame
 	protected virtual void Update () {
-		transform.Translate(Vector3.left  * ((speed * MOVEABLE_SPEED_MULTIPLIER) * Time.deltaTime));
-		
-		if (transform.localPosition.x <= X_POS_END)
+
+		if (GameManager.Instance.GameActive)
 		{
-			MoveableExceededBoundary();
+			transform.Translate(Vector3.left  * ((speed * GameManager.Instance.GameSpeedMultiplier) * Time.deltaTime));
+			
+			if (transform.localPosition.x <= X_POS_END)
+			{
+				MoveableExceededBoundary();
+			}
 		}
 	}
 
